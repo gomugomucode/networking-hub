@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Networks Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── DARK THEME (default) ── */
+:root {
+  --bg:#07090f; --bg2:#0c1018; --surface:#111827; --border:#1f2937;
+  --accent:#00e5ff; --accent2:#ff6b35; --accent3:#a78bfa;
+  --text:#e2e8f0; --muted:#6b7280; --green:#10b981; --yellow:#fbbf24;
+  --card-h2:#ffffff; --prose-color:#94a3b8; --fact-color:#94a3b8;
+  --td-color:#94a3b8; --hbox-color:#94a3b8; --steps-color:#94a3b8;
+  --grid-color:rgba(0,229,255,.03); --diagram-bg:#07090f;
+  --table-hover:rgba(255,255,255,.02);
+  --toggle-bg:#1f2937; --toggle-knob:#00e5ff;
+  --shadow: 0 20px 40px rgba(0,0,0,.4);
+}
+/* ── LIGHT THEME ── */
+body.light {
+  --bg:#f0f4f8; --bg2:#e8edf3; --surface:#ffffff; --border:#d1d9e6;
+  --accent:#0077aa; --accent2:#d4521a; --accent3:#6d28d9;
+  --text:#1e293b; --muted:#64748b; --green:#059669; --yellow:#d97706;
+  --card-h2:#0f172a; --prose-color:#475569; --fact-color:#475569;
+  --td-color:#475569; --hbox-color:#475569; --steps-color:#475569;
+  --grid-color:rgba(0,119,170,.04); --diagram-bg:#e8edf3;
+  --table-hover:rgba(0,0,0,.02);
+  --toggle-bg:#cbd5e1; --toggle-knob:#0077aa;
+  --shadow: 0 20px 40px rgba(0,0,0,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;overflow-x:hidden;transition:background .35s,color .35s;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+
+/* ── THEME TOGGLE BUTTON ── */
+#theme-toggle{position:fixed;top:18px;right:20px;z-index:9999;display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:7px 14px 7px 10px;cursor:pointer;transition:all .3s;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+#theme-toggle:hover{border-color:var(--accent);box-shadow:0 4px 20px rgba(0,0,0,.3);}
+.toggle-track{width:36px;height:20px;background:var(--toggle-bg);border-radius:100px;position:relative;transition:background .35s;flex-shrink:0;}
+.toggle-knob{position:absolute;top:3px;left:3px;width:14px;height:14px;background:var(--toggle-knob);border-radius:50%;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .35s;}
+body.light .toggle-knob{transform:translateX(16px);}
+.toggle-icons{font-size:13px;line-height:1;}
+.toggle-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);transition:color .3s;white-space:nowrap;}
+
+/* ── PAGES ── */
+.page{display:none;position:relative;z-index:1;min-height:100vh;}
+.page.active{display:block;}
+
+/* ── HOME ── */
+#home-header{text-align:center;padding:70px 20px 50px;position:relative;}
+#home-header::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:700px;height:280px;background:radial-gradient(ellipse,rgba(0,229,255,.1) 0%,transparent 70%);pointer-events:none;}
+.badge{display:inline-block;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);padding:4px 14px;border-radius:2px;margin-bottom:20px;}
+#home-header h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,6vw,4.2rem);font-weight:800;line-height:1.1;}
+#home-header h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.home-sub{color:var(--muted);font-size:12px;letter-spacing:1px;margin-top:14px;}
+
+/* ── CARDS GRID ── */
+#cards-grid{max-width:1200px;margin:0 auto;padding:20px 20px 80px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;}
+.topic-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:28px;cursor:pointer;position:relative;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;animation:fadeUp .5s ease both;}
+.topic-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent3));transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+.topic-card:hover{transform:translateY(-5px);border-color:rgba(0,229,255,.35);box-shadow:0 20px 40px rgba(0,0,0,.4);}
+.topic-card:hover::after{transform:scaleX(1);}
+.card-no{font-size:10px;color:var(--accent);letter-spacing:2px;margin-bottom:10px;}
+.card-icon-big{font-size:2.4rem;margin-bottom:12px;display:block;}
+.topic-card h2{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:10px;}
+.topic-card p{font-size:11px;line-height:1.8;color:var(--muted);}
+.card-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px;}
+.chip{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:2px;background:rgba(0,229,255,.07);color:var(--accent);border:1px solid rgba(0,229,255,.18);}
+.card-arrow{position:absolute;bottom:20px;right:20px;font-size:18px;color:var(--border);transition:color .2s,transform .2s;}
+.topic-card:hover .card-arrow{color:var(--accent);transform:translateX(4px);}
+.topic-card:nth-child(1){animation-delay:.05s}.topic-card:nth-child(2){animation-delay:.1s}.topic-card:nth-child(3){animation-delay:.15s}.topic-card:nth-child(4){animation-delay:.2s}.topic-card:nth-child(5){animation-delay:.25s}.topic-card:nth-child(6){animation-delay:.3s}.topic-card:nth-child(7){animation-delay:.35s}.topic-card:nth-child(8){animation-delay:.4s}
+
+/* ── TOPIC PAGE ── */
+.tp-header{padding:40px 40px 30px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.tp-header::before{content:'';position:absolute;right:-100px;top:-60px;width:350px;height:350px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,229,255,.08) 0%,transparent 70%);pointer-events:none;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border);padding:6px 14px;border-radius:2px;cursor:pointer;transition:all .2s;margin-bottom:24px;}
+.back-btn:hover{color:var(--accent);border-color:var(--accent);}
+.tp-num{font-size:10px;color:var(--accent);letter-spacing:2px;margin-bottom:8px;}
+.tp-header h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.8rem);font-weight:800;color:#fff;line-height:1.1;}
+.tp-tagline{font-size:12px;color:var(--muted);margin-top:10px;max-width:650px;line-height:1.8;}
+.tp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;}
+
+/* ── CONTENT WRAPPER ── */
+.tp-content{max-width:1100px;margin:0 auto;padding:40px 30px 80px;display:grid;gap:28px;}
+
+/* ── SECTION BLOCKS ── */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.section-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.section-header .s-icon{font-size:1.2rem;}
+.section-header h3{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);}
+.section-body{padding:24px;}
+
+/* prose */
+.prose{font-size:12px;line-height:1.9;color:#94a3b8;}
+.prose p{margin-bottom:12px;}
+.prose strong{color:#e2e8f0;}
+
+/* list */
+.fact-list{list-style:none;}
+.fact-list li{font-size:12px;color:#94a3b8;padding:8px 0;border-bottom:1px solid rgba(31,41,55,.6);display:flex;gap:10px;line-height:1.7;}
+.fact-list li:last-child{border-bottom:none;}
+.fact-list li::before{content:'▸';color:var(--accent);flex-shrink:0;margin-top:2px;}
+
+/* table */
+.data-table{width:100%;border-collapse:collapse;font-size:11px;}
+.data-table th{background:rgba(0,229,255,.07);color:var(--accent);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+.data-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:rgba(255,255,255,.02);}
+.pill{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;}
+.pill.green{background:rgba(16,185,129,.15);color:var(--green);}
+.pill.orange{background:rgba(255,107,53,.15);color:var(--accent2);}
+.pill.purple{background:rgba(167,139,250,.15);color:var(--accent3);}
+.pill.yellow{background:rgba(251,191,36,.15);color:var(--yellow);}
+.pill.blue{background:rgba(0,229,255,.15);color:var(--accent);}
+
+/* grid 2col */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+
+/* highlight box */
+.hbox{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.2);border-radius:4px;padding:16px 20px;font-size:12px;color:#94a3b8;line-height:1.8;}
+.hbox strong{color:var(--accent);}
+.hbox.orange{background:rgba(255,107,53,.05);border-color:rgba(255,107,53,.2);}
+.hbox.orange strong{color:var(--accent2);}
+.hbox.purple{background:rgba(167,139,250,.05);border-color:rgba(167,139,250,.2);}
+.hbox.purple strong{color:var(--accent3);}
+
+/* step list */
+.steps{counter-reset:step;list-style:none;}
+.steps li{counter-increment:step;display:flex;gap:14px;padding:12px 0;border-bottom:1px solid rgba(31,41,55,.6);font-size:12px;color:#94a3b8;line-height:1.7;}
+.steps li:last-child{border-bottom:none;}
+.steps li::before{content:counter(step,'01234567890');display:flex;align-items:center;justify-content:center;min-width:26px;height:26px;border-radius:2px;background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:var(--accent);font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px;}
+
+/* ── SVG DIAGRAMS ── */
+svg{display:block;width:100%;overflow:visible;}
+.diagram-wrap{background:#07090f;border-radius:4px;padding:20px;overflow-x:auto;}
+
+/* footer */
+#site-footer{position:relative;z-index:1;text-align:center;padding:24px;font-size:10px;color:var(--muted);border-top:1px solid var(--border);letter-spacing:1px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ HOME PAGE ════════════════ -->
+<div class="page active" id="page-home">
+  <div id="home-header">
+    <div class="badge">Computer Networks</div>
+    <h1>Network <em>Concepts</em><br>Reference Hub</h1>
+    <p class="home-sub">// 8 core topics — click a card to explore</p>
+  </div>
+  <div id="cards-grid">
+    <div class="topic-card" onclick="showPage('subnet')">
+      <div class="card-no">— 01</div>
+      <span class="card-icon-big">🔲</span>
+      <h2>Subnet Mask</h2>
+      <p>Divides IP addresses into network and host portions, enabling subnetting and efficient address management.</p>
+      <div class="card-chips"><span class="chip">IPv4</span><span class="chip">CIDR</span><span class="chip">Addressing</span></div>
+      <span class="card-arrow">→</span>
+    </div>
+    <div class="topic-card" onclick="showPage('channel')">
+      <div class="card-no">— 02</div>
+      <span class="card-icon-big">📡</span>
+      <h2>Channel Allocation Problem</h2>
+      <p>How bandwidth of a shared channel is distributed among competing users in multi-access networks.</p>
+      <div class="card-chips"><span class="chip">MAC</span><span class="chip">ALOHA</span><span class="chip">CSMA</span></div>
+      <span class="card-arrow">→</span>
+    </div>
+    <div class="topic-card" onclick="showPage('classful')">
+      <div class="card-no">— 03</div>
+      <span class="card-icon-big">⚠️</span>
+      <h2>Problems with Classful Addressing</h2>
+      <p>Original IPv4 class-based scheme caused massive address waste and IPv4 exhaustion.</p>
+      <div class="card-chips"><span class="chip">IPv4</span><span class="chip">Classes</span><span class="chip">CIDR</span></div>
+      <span class="card-arrow">→</span>
+    </div>
+    <div class="topic-card" onclick="showPage('nat')">
+      <div class="card-no">— 04</div>
+      <span class="card-icon-big">🔄</span>
+      <h2>Network Address Translation</h2>
+      <p>Allows multiple private-network devices to share a single public IP address via address mapping.</p>
+      <div class="card-chips"><span class="chip">NAT</span><span class="chip">PAT</span><span class="chip">Router</span></div>
+      <span class="card-arrow">→</span>
+    </div>
+    <div class="topic-card" onclick="showPage('ipv4')">
+      <div class="card-no">— 05</div>
+      <span class="card-icon-big">📦</span>
+      <h2>IPv4 Datagram & Fragmentation</h2>
+      <p>Structure of the IPv4 header and how large datagrams are split for transmission across networks.</p>
+      <div class="card-chips"><span class="chip">IPv4</span><span class="chip">Header</span><span class="chip">MTU</span></div>
+      <span class="card-arrow">→</span>
+    </div>
+    <div class="topic-card" onclick="showPage('routing')">
+      <div class="card-no">— 06</div>
+      <span class="card-icon-big">🗺️</span>
+      <h2>Routing & Internet Control Protocol</h2>
+      <p>Path-selection algorithms and ICMP's role in error reporting and diagnostics.</p>
+      <div class="card-chips"><span class="chip">OSPF</span><span class="chip">RIP</span><span class="chip">ICMP</span></div>
+      <span class="card-arrow">→</span>
+    </div>
+    <div class="topic-card" onclick="showPage('dll')">
+      <div class="card-no">— 07</div>
+      <span class="card-icon-big">🔗</span>
+      <h2>DLL Protocol</h2>
+      <p>Data Link Layer provides framing, error control, flow control and MAC addressing for local delivery.</p>
+      <div class="card-chips"><span class="chip">Ethernet</span><span class="chip">CRC</span><span class="chip">MAC</span></div>
+      <span class="card-arrow">→</span>
+    </div>
+    <div class="topic-card" onclick="showPage('osi')">
+      <div class="card-no">— 08</div>
+      <span class="card-icon-big">🏗️</span>
+      <h2>OSI Reference Model</h2>
+      <p>The 7-layer conceptual framework that standardises how heterogeneous systems communicate.</p>
+      <div class="card-chips"><span class="chip">7 Layers</span><span class="chip">Protocol Stack</span><span class="chip">ISO</span></div>
+      <span class="card-arrow">→</span>
+    </div>
+  </div>
+  <div id="site-footer">COMPUTER NETWORKS — REFERENCE HUB</div>
+</div>
+
+<!-- ════════════════ PAGE 1: SUBNET MASK ════════════════ -->
+<div class="page" id="page-subnet">
+  <div class="tp-header">
+    <button class="back-btn" onclick="goHome()">← Back to Hub</button>
+    <div class="tp-num">— TOPIC 01</div>
+    <h1>Subnet Mask</h1>
+    <p class="tp-tagline">A 32-bit number that partitions an IP address into its network portion and host portion, enabling subnetting, routing, and efficient IP address allocation.</p>
+    <div class="tp-chips"><span class="chip">IPv4</span><span class="chip">CIDR</span><span class="chip">Addressing</span><span class="chip">Networking</span></div>
+  </div>
+  <div class="tp-content">
+
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📖</span><h3>What is a Subnet Mask?</h3></div>
+      <div class="section-body">
+        <div class="prose">
+          <p>A <strong>subnet mask</strong> is a 32-bit number written alongside an IP address. It uses binary 1s to mark the <strong>network bits</strong> and binary 0s to mark the <strong>host bits</strong>. When logically ANDed with an IP address, the result is the <strong>network address</strong> of that subnet.</p>
+          <p>For example, IP <strong>192.168.1.45</strong> with mask <strong>255.255.255.0</strong> → network address <strong>192.168.1.0</strong>, host <strong>.45</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Binary diagram -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">🔬</span><h3>Binary Breakdown Diagram</h3></div>
+      <div class="section-body">
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg" style="max-height:220px">
+            <style>.dl{font-family:'Space Mono',monospace;font-size:11px;fill:#6b7280}.dv{font-family:'Space Mono',monospace;font-size:11px;fill:#e2e8f0}.da{font-family:'Space Mono',monospace;font-size:11px;fill:#00e5ff}.dh{font-family:'Space Mono',monospace;font-size:11px;fill:#ff6b35}</style>
+            <!-- Labels -->
+            <text x="10" y="35" class="dl">IP ADDRESS</text>
+            <text x="10" y="85" class="dl">SUBNET MASK</text>
+            <text x="10" y="135" class="dl">AND RESULT</text>
+            <text x="10" y="185" class="dl">NETWORK</text>
+            <!-- IP bits -->
+            <!-- Octet 1: 11000000 -->
+            <g transform="translate(140,18)">
+              <!-- background boxes for network bits -->
+              <rect x="0" y="0" width="196" height="24" rx="2" fill="rgba(0,229,255,.08)" stroke="rgba(0,229,255,.3)" stroke-width="1"/>
+              <rect x="196" y="0" width="196" height="24" rx="2" fill="rgba(255,107,53,.08)" stroke="rgba(255,107,53,.3)" stroke-width="1"/>
+              <!-- IP row -->
+              <text x="10"  y="16" class="da">1 1 0 0 0 0 0 0</text>
+              <text x="80"  y="16" class="da">.</text>
+              <text x="95"  y="16" class="da">1 0 1 0 1 0 0 0</text>
+              <text x="165" y="16" class="da">.</text>
+              <text x="180" y="16" class="da">0 0 0 0 0 0 0 1</text>
+              <text x="250" y="16" class="da">.</text>
+              <text x="265" y="16" class="dh">0 0 1 0 1 1 0 1</text>
+            </g>
+            <g transform="translate(140,68)">
+              <rect x="0" y="0" width="196" height="24" rx="2" fill="rgba(0,229,255,.08)" stroke="rgba(0,229,255,.3)" stroke-width="1"/>
+              <rect x="196" y="0" width="196" height="24" rx="2" fill="rgba(255,107,53,.08)" stroke="rgba(255,107,53,.3)" stroke-width="1"/>
+              <text x="10"  y="16" class="da">1 1 1 1 1 1 1 1</text>
+              <text x="80"  y="16" class="da">.</text>
+              <text x="95"  y="16" class="da">1 1 1 1 1 1 1 1</text>
+              <text x="165" y="16" class="da">.</text>
+              <text x="180" y="16" class="da">1 1 1 1 1 1 1 1</text>
+              <text x="250" y="16" class="da">.</text>
+              <text x="265" y="16" class="dh">0 0 0 0 0 0 0 0</text>
+            </g>
+            <!-- AND line -->
+            <line x1="140" y1="102" x2="530" y2="102" stroke="#1f2937" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="113" y="106" class="dl" font-size="9">AND ↓</text>
+            <g transform="translate(140,118)">
+              <rect x="0" y="0" width="196" height="24" rx="2" fill="rgba(0,229,255,.12)" stroke="rgba(0,229,255,.5)" stroke-width="1"/>
+              <rect x="196" y="0" width="196" height="24" rx="2" fill="rgba(255,107,53,.05)" stroke="rgba(255,107,53,.15)" stroke-width="1"/>
+              <text x="10"  y="16" class="da">1 1 0 0 0 0 0 0</text>
+              <text x="80"  y="16" class="da">.</text>
+              <text x="95"  y="16" class="da">1 0 1 0 1 0 0 0</text>
+              <text x="165" y="16" class="da">.</text>
+              <text x="180" y="16" class="da">0 0 0 0 0 0 0 1</text>
+              <text x="250" y="16" class="da">.</text>
+              <text x="265" y="16" class="dh">0 0 0 0 0 0 0 0</text>
+            </g>
+            <!-- decimal -->
+            <g transform="translate(140,168)">
+              <text x="22"  y="16" class="dv">192</text>
+              <text x="80"  y="16" class="dv">.</text>
+              <text x="95"  y="16" class="dv">168</text>
+              <text x="165" y="16" class="dv">.</text>
+              <text x="180" y="16" class="dv">  1</text>
+              <text x="250" y="16" class="dv">.</text>
+              <text x="265" y="16" class="dh">  0</text>
+            </g>
+            <!-- legend -->
+            <rect x="560" y="30" width="12" height="12" rx="1" fill="rgba(0,229,255,.3)"/>
+            <text x="576" y="41" class="dl">Network bits</text>
+            <rect x="560" y="54" width="12" height="12" rx="1" fill="rgba(255,107,53,.3)"/>
+            <text x="576" y="65" class="dl">Host bits</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Common masks table -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📊</span><h3>Common Subnet Masks — Reference Table</h3></div>
+      <div class="section-body">
+        <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>CIDR</th><th>Dotted Decimal</th><th>Total Addresses</th><th>Usable Hosts</th><th>Class</th><th>Use Case</th></tr></thead>
+          <tbody>
+            <tr><td>/8</td><td>255.0.0.0</td><td>16,777,216</td><td>16,777,214</td><td><span class="pill blue">A</span></td><td>Large enterprises, ISPs</td></tr>
+            <tr><td>/16</td><td>255.255.0.0</td><td>65,536</td><td>65,534</td><td><span class="pill green">B</span></td><td>Universities, medium enterprises</td></tr>
+            <tr><td>/24</td><td>255.255.255.0</td><td>256</td><td>254</td><td><span class="pill orange">C</span></td><td>Small offices, home networks</td></tr>
+            <tr><td>/25</td><td>255.255.255.128</td><td>128</td><td>126</td><td><span class="pill purple">Sub</span></td><td>Split Class C into 2</td></tr>
+            <tr><td>/26</td><td>255.255.255.192</td><td>64</td><td>62</td><td><span class="pill purple">Sub</span></td><td>Split into 4 subnets</td></tr>
+            <tr><td>/27</td><td>255.255.255.224</td><td>32</td><td>30</td><td><span class="pill purple">Sub</span></td><td>Small segments</td></tr>
+            <tr><td>/30</td><td>255.255.255.252</td><td>4</td><td>2</td><td><span class="pill yellow">Point</span></td><td>Point-to-point WAN links</td></tr>
+            <tr><td>/32</td><td>255.255.255.255</td><td>1</td><td>0</td><td><span class="pill yellow">Host</span></td><td>Host route / loopback</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Why Subnet -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">💡</span><h3>Why Use Subnetting?</h3></div>
+      <div class="section-body">
+        <div class="grid2">
+          <div class="hbox"><strong>Reduce Congestion</strong><br>Limits broadcast domains so broadcast traffic only floods a smaller subnet, not the entire network.</div>
+          <div class="hbox purple"><strong>Security Isolation</strong><br>Finance, HR, and Dev departments can be placed in separate subnets with firewall rules between them.</div>
+          <div class="hbox orange"><strong>Efficient IP Use</strong><br>Assign only the address block size needed, avoiding waste. A /30 for a P2P link instead of a /24.</div>
+          <div class="hbox"><strong>Easier Management</strong><br>Smaller logical segments are easier to monitor, troubleshoot and apply access policies to.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 2: CHANNEL ALLOCATION ════════════════ -->
+<div class="page" id="page-channel">
+  <div class="tp-header">
+    <button class="back-btn" onclick="goHome()">← Back to Hub</button>
+    <div class="tp-num">— TOPIC 02</div>
+    <h1>Channel Allocation Problem</h1>
+    <p class="tp-tagline">Managing how a shared communication channel's bandwidth is divided among multiple competing stations — the core challenge of the MAC sublayer.</p>
+    <div class="tp-chips"><span class="chip">MAC</span><span class="chip">ALOHA</span><span class="chip">CSMA</span><span class="chip">Multiplexing</span></div>
+  </div>
+  <div class="tp-content">
+
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📖</span><h3>The Core Problem</h3></div>
+      <div class="section-body">
+        <div class="prose"><p>When multiple stations share <strong>one physical channel</strong>, simultaneous transmissions cause <strong>collisions</strong>, destroying both frames. A <strong>channel allocation protocol</strong> defines rules for who may transmit and when, balancing throughput, fairness, and latency.</p></div>
+      </div>
+    </div>
+
+    <!-- Comparison table -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📊</span><h3>Protocol Comparison Table</h3></div>
+      <div class="section-body">
+        <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Protocol</th><th>Type</th><th>Max Efficiency</th><th>Collision Handling</th><th>Used In</th></tr></thead>
+          <tbody>
+            <tr><td>Pure ALOHA</td><td><span class="pill orange">Dynamic</span></td><td>18.4%</td><td>Random retransmit</td><td>Early satellite</td></tr>
+            <tr><td>Slotted ALOHA</td><td><span class="pill orange">Dynamic</span></td><td>36.8%</td><td>Retransmit next slot</td><td>GSM random access</td></tr>
+            <tr><td>CSMA/CD</td><td><span class="pill green">Dynamic</span></td><td>~50-90%</td><td>Stop, jam, backoff</td><td>Ethernet 802.3</td></tr>
+            <tr><td>CSMA/CA</td><td><span class="pill green">Dynamic</span></td><td>~50-80%</td><td>Wait random backoff</td><td>Wi-Fi 802.11</td></tr>
+            <tr><td>FDM</td><td><span class="pill blue">Static</span></td><td>100% (no collision)</td><td>N/A — dedicated band</td><td>Cable TV, Radio</td></tr>
+            <tr><td>TDM</td><td><span class="pill blue">Static</span></td><td>100% (no collision)</td><td>N/A — dedicated slot</td><td>SONET, GSM voice</td></tr>
+            <tr><td>Token Ring</td><td><span class="pill purple">Controlled</span></td><td>~90%</td><td>Only token holder transmits</td><td>IEEE 802.5 (legacy)</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALOHA throughput diagram -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📈</span><h3>ALOHA Throughput Curve</h3></div>
+      <div class="section-body">
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg" style="max-height:260px">
+            <style>.ax{stroke:#1f2937;stroke-width:1}.lbl{font-family:'Space Mono',monospace;font-size:10px;fill:#6b7280}.val{font-family:'Space Mono',monospace;font-size:10px;fill:#e2e8f0}</style>
+            <!-- Axes -->
+            <line x1="60" y1="20" x2="60" y2="210" class="ax"/>
+            <line x1="60" y1="210" x2="540" y2="210" class="ax"/>
+            <!-- Axis labels -->
+            <text x="270" y="235" class="lbl" text-anchor="middle">Offered Load (G)</text>
+            <text x="20" y="120" class="lbl" transform="rotate(-90,20,120)" text-anchor="middle">Throughput (S)</text>
+            <!-- Y ticks -->
+            <line x1="56" y1="77" x2="60" y2="77" class="ax"/><text x="46" y="81" class="lbl" text-anchor="end">0.4</text>
+            <line x1="56" y1="125" x2="60" y2="125" class="ax"/><text x="46" y="129" class="lbl" text-anchor="end">0.2</text>
+            <line x1="56" y1="53" x2="60" y2="53" class="ax"/><text x="46" y="57" class="lbl" text-anchor="end">0.5</text>
+            <!-- X ticks -->
+            <line x1="156" y1="210" x2="156" y2="214" class="ax"/><text x="156" y="224" class="lbl" text-anchor="middle">0.5</text>
+            <line x1="252" y1="210" x2="252" y2="214" class="ax"/><text x="252" y="224" class="lbl" text-anchor="middle">1.0</text>
+            <line x1="444" y1="210" x2="444" y2="214" class="ax"/><text x="444" y="224" class="lbl" text-anchor="middle">2.0</text>
+            <!-- Slotted ALOHA curve: S = G*e^-G, peak at G=1 S=0.368 -->
+            <polyline points="60,210 100,185 140,162 180,144 220,133 252,125 290,122 330,126 370,135 410,148 450,163 490,179 530,193" fill="none" stroke="#00e5ff" stroke-width="2.5"/>
+            <!-- Pure ALOHA curve: S = G*e^-2G, peak at G=0.5 S=0.184 -->
+            <polyline points="60,210 80,196 100,185 120,176 156,165 180,162 210,163 252,170 290,180 340,192 390,202 440,208 490,210 530,210" fill="none" stroke="#ff6b35" stroke-width="2.5" stroke-dasharray="6,3"/>
+            <!-- Peak markers -->
+            <circle cx="252" cy="125" r="4" fill="#00e5ff"/>
+            <text x="258" y="120" class="val" fill="#00e5ff">S=0.368 (Slotted)</text>
+            <circle cx="156" cy="165" r="4" fill="#ff6b35"/>
+            <text x="162" y="160" class="val" fill="#ff6b35">S=0.184 (Pure)</text>
+            <!-- Legend -->
+            <line x1="400" y1="50" x2="420" y2="50" stroke="#00e5ff" stroke-width="2.5"/><text x="425" y="54" class="lbl" fill="#00e5ff">Slotted ALOHA</text>
+            <line x1="400" y1="70" x2="420" y2="70" stroke="#ff6b35" stroke-width="2.5" stroke-dasharray="5,3"/><text x="425" y="74" class="lbl" fill="#ff6b35">Pure ALOHA</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><span class="s-icon">⚙️</span><h3>CSMA Variants Explained</h3></div>
+      <div class="section-body">
+        <ul class="fact-list">
+          <li><strong>1-persistent CSMA:</strong> If channel idle → transmit immediately. If busy → keep listening and transmit as soon as it becomes idle. Highest collision risk.</li>
+          <li><strong>Non-persistent CSMA:</strong> If busy → wait a random time, then check again. Less collision probability but lower channel utilisation.</li>
+          <li><strong>p-persistent CSMA:</strong> If idle → transmit with probability p; defer with probability (1-p). Balance between the above two.</li>
+          <li><strong>CSMA/CD (Collision Detection):</strong> Used in wired Ethernet. While transmitting, monitor for collision (voltage spike). If detected → stop, send 48-bit jam signal, wait exponential backoff, retry.</li>
+          <li><strong>CSMA/CA (Collision Avoidance):</strong> Used in Wi-Fi. Can't detect collisions on wireless. Instead: wait IFS period, then random backoff before transmitting. Optionally use RTS/CTS handshake.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 3: CLASSFUL ADDRESSING ════════════════ -->
+<div class="page" id="page-classful">
+  <div class="tp-header">
+    <button class="back-btn" onclick="goHome()">← Back to Hub</button>
+    <div class="tp-num">— TOPIC 03</div>
+    <h1>Problems with Classful Addressing</h1>
+    <p class="tp-tagline">The original IPv4 class system (A–E) caused catastrophic address waste and accelerated the exhaustion of the 4.3-billion address IPv4 space, leading to the invention of CIDR.</p>
+    <div class="tp-chips"><span class="chip">IPv4</span><span class="chip">Class A/B/C</span><span class="chip">CIDR</span><span class="chip">Address Waste</span></div>
+  </div>
+  <div class="tp-content">
+
+    <!-- Classes table -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📊</span><h3>The Five IPv4 Classes</h3></div>
+      <div class="section-body">
+        <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Class</th><th>First Bits</th><th>Range</th><th>Networks</th><th>Hosts/Network</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill blue">A</span></td><td>0xxxxxxx</td><td>0 – 127</td><td>128</td><td>16,777,214</td><td>Large ISPs, governments</td></tr>
+            <tr><td><span class="pill green">B</span></td><td>10xxxxxx</td><td>128 – 191</td><td>16,384</td><td>65,534</td><td>Universities, enterprises</td></tr>
+            <tr><td><span class="pill orange">C</span></td><td>110xxxxx</td><td>192 – 223</td><td>2,097,152</td><td>254</td><td>Small businesses</td></tr>
+            <tr><td><span class="pill purple">D</span></td><td>1110xxxx</td><td>224 – 239</td><td>N/A</td><td>N/A</td><td>Multicast groups</td></tr>
+            <tr><td><span class="pill yellow">E</span></td><td>1111xxxx</td><td>240 – 255</td><td>N/A</td><td>N/A</td><td>Reserved / Experimental</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address space pie visual -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">🥧</span><h3>IPv4 Address Space Distribution</h3></div>
+      <div class="section-body">
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg" style="max-height:200px">
+            <!-- Simple horizontal bar showing proportion -->
+            <text x="10" y="20" font-family="Space Mono" font-size="10" fill="#6b7280">TOTAL 4,294,967,296 ADDRESSES</text>
+            <!-- Class A: 2,147,483,648 = 50% -->
+            <rect x="10" y="35" width="280" height="40" rx="2" fill="rgba(0,229,255,.25)" stroke="rgba(0,229,255,.5)" stroke-width="1"/>
+            <text x="150" y="59" font-family="Space Mono" font-size="10" fill="#00e5ff" text-anchor="middle">CLASS A — 50%</text>
+            <!-- Class B: 1,073,741,824 = 25% -->
+            <rect x="290" y="35" width="140" height="40" rx="2" fill="rgba(16,185,129,.25)" stroke="rgba(16,185,129,.5)" stroke-width="1"/>
+            <text x="360" y="59" font-family="Space Mono" font-size="10" fill="#10b981" text-anchor="middle">CLASS B 25%</text>
+            <!-- Class C: 536,870,912 = 12.5% -->
+            <rect x="430" y="35" width="70" height="40" rx="2" fill="rgba(255,107,53,.25)" stroke="rgba(255,107,53,.5)" stroke-width="1"/>
+            <text x="465" y="55" font-family="Space Mono" font-size="9" fill="#ff6b35" text-anchor="middle">C 12.5%</text>
+            <!-- D + E -->
+            <rect x="500" y="35" width="30" height="40" rx="2" fill="rgba(167,139,250,.25)" stroke="rgba(167,139,250,.5)" stroke-width="1"/>
+            <text x="515" y="59" font-family="Space Mono" font-size="8" fill="#a78bfa" text-anchor="middle">D+E</text>
+            <!-- waste example -->
+            <text x="10" y="105" font-family="Space Mono" font-size="10" fill="#6b7280">WASTE EXAMPLE — Organisation needs 300 hosts:</text>
+            <!-- needs -->
+            <rect x="10" y="115" width="30" height="30" rx="2" fill="rgba(0,229,255,.3)" stroke="#00e5ff" stroke-width="1"/>
+            <text x="25" y="134" font-family="Space Mono" font-size="8" fill="#00e5ff" text-anchor="middle">300</text>
+            <text x="48" y="134" font-family="Space Mono" font-size="10" fill="#6b7280">hosts needed</text>
+            <!-- gets class B -->
+            <rect x="150" y="115" width="360" height="30" rx="2" fill="rgba(255,107,53,.15)" stroke="rgba(255,107,53,.4)" stroke-width="1"/>
+            <text x="330" y="134" font-family="Space Mono" font-size="10" fill="#ff6b35" text-anchor="middle">CLASS B ASSIGNED → 65,534 host slots</text>
+            <!-- wasted -->
+            <text x="10" y="172" font-family="Space Mono" font-size="10" fill="#6b7280">WASTED ADDRESSES:</text>
+            <rect x="160" y="158" width="365" height="20" rx="2" fill="rgba(255,107,53,.2)"/>
+            <text x="342" y="172" font-family="Space Mono" font-size="10" fill="#ff6b35" text-anchor="middle">65,234 addresses WASTED (99.5%)</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Problems list -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">⚠️</span><h3>Critical Problems</h3></div>
+      <div class="section-body">
+        <ul class="fact-list">
+          <li><strong>Massive Address Waste:</strong> Class boundaries are rigid. A company with 300 hosts must get a Class B (65,534 addresses), wasting 65,234 — 99.5% of the block.</li>
+          <li><strong>IPv4 Exhaustion:</strong> 128 Class A blocks consumed 50% of all IPv4 space. With the internet boom, address pools emptied rapidly. IANA exhausted its pool in February 2011.</li>
+          <li><strong>Routing Table Explosion:</strong> No way to aggregate routes across class boundaries meant millions of entries in backbone routers, exceeding memory limits of the era.</li>
+          <li><strong>No Flexibility:</strong> Needed 500 hosts? Too small for Class B (65K), too big for Class C (254). No in-between option existed.</li>
+          <li><strong>Supernetting Not Possible:</strong> Adjacent Class C blocks couldn't be combined into a single route entry, preventing route summarisation.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CIDR solution -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">✅</span><h3>Solution: CIDR (Classless Inter-Domain Routing)</h3></div>
+      <div class="section-body">
+        <div class="grid2">
+          <div class="hbox"><strong>Variable-Length Prefix:</strong><br>Any prefix /0 to /32 is valid. Need 500 hosts? Use /23 (510 usable hosts) — no waste.</div>
+          <div class="hbox purple"><strong>Route Aggregation:</strong><br>Four /24 blocks (192.168.0.0–192.168.3.0) can be advertised as one /22, reducing routing table size.</div>
+          <div class="hbox orange"><strong>Slower Exhaustion:</strong><br>CIDR allowed ISPs to hand out exactly what was needed, buying time until IPv6 adoption.</div>
+          <div class="hbox"><strong>VLSM:</strong><br>Variable-Length Subnet Masking lets a single allocated block be divided into subnets of different sizes within an organisation.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 4: NAT ════════════════ -->
+<div class="page" id="page-nat">
+  <div class="tp-header">
+    <button class="back-btn" onclick="goHome()">← Back to Hub</button>
+    <div class="tp-num">— TOPIC 04</div>
+    <h1>Network Address Translation</h1>
+    <p class="tp-tagline">NAT lets an entire private network share one public IP address by transparently rewriting source/destination addresses at the gateway router.</p>
+    <div class="tp-chips"><span class="chip">NAT</span><span class="chip">PAT</span><span class="chip">IPv4</span><span class="chip">Router</span></div>
+  </div>
+  <div class="tp-content">
+
+    <!-- Flow diagram -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">🔄</span><h3>PAT (NAT Overload) — Flow Diagram</h3></div>
+      <div class="section-body">
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style="max-height:200px">
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+                <polygon points="0,0 8,3 0,6" fill="#00e5ff"/>
+              </marker>
+            </defs>
+            <!-- Private LAN -->
+            <rect x="10" y="40" width="130" height="140" rx="4" fill="rgba(0,229,255,.05)" stroke="rgba(0,229,255,.2)" stroke-width="1"/>
+            <text x="75" y="30" font-family="Space Mono" font-size="9" fill="#00e5ff" text-anchor="middle">PRIVATE LAN</text>
+            <!-- Hosts -->
+            <rect x="20" y="55" width="110" height="22" rx="2" fill="rgba(0,229,255,.1)" stroke="rgba(0,229,255,.3)" stroke-width="1"/>
+            <text x="75" y="70" font-family="Space Mono" font-size="9" fill="#e2e8f0" text-anchor="middle">192.168.1.10:3000</text>
+            <rect x="20" y="87" width="110" height="22" rx="2" fill="rgba(0,229,255,.1)" stroke="rgba(0,229,255,.3)" stroke-width="1"/>
+            <text x="75" y="102" font-family="Space Mono" font-size="9" fill="#e2e8f0" text-anchor="middle">192.168.1.11:4000</text>
+            <rect x="20" y="119" width="110" height="22" rx="2" fill="rgba(0,229,255,.1)" stroke="rgba(0,229,255,.3)" stroke-width="1"/>
+            <text x="75" y="134" font-family="Space Mono" font-size="9" fill="#e2e8f0" text-anchor="middle">192.168.1.12:5000</text>
+            <!-- Arrows to router -->
+            <line x1="140" y1="66" x2="230" y2="90" stroke="#00e5ff" stroke-width="1.2" marker-end="url(#arr)"/>
+            <line x1="140" y1="98" x2="230" y2="98" stroke="#00e5ff" stroke-width="1.2" marker-end="url(#arr)"/>
+            <line x1="140" y1="130" x2="230" y2="106" stroke="#00e5ff" stroke-width="1.2" marker-end="url(#arr)"/>
+            <!-- Router -->
+            <rect x="230" y="65" width="120" height="68" rx="4" fill="rgba(167,139,250,.15)" stroke="rgba(167,139,250,.6)" stroke-width="1.5"/>
+            <text x="290" y="90" font-family="Space Mono" font-size="10" fill="#a78bfa" text-anchor="middle" font-weight="bold">NAT</text>
+            <text x="290" y="105" font-family="Space Mono" font-size="9" fill="#a78bfa" text-anchor="middle">ROUTER</text>
+            <text x="290" y="125" font-family="Space Mono" font-size="8" fill="#6b7280" text-anchor="middle">203.0.113.1</text>
+            <!-- Arrows to NAT table -->
+            <line x1="350" y1="98" x2="400" y2="98" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arr)"/>
+            <!-- NAT Table -->
+            <rect x="400" y="40" width="190" height="120" rx="4" fill="rgba(16,185,129,.05)" stroke="rgba(16,185,129,.3)" stroke-width="1"/>
+            <text x="495" y="30" font-family="Space Mono" font-size="9" fill="#10b981" text-anchor="middle">NAT TRANSLATION TABLE</text>
+            <text x="495" y="58" font-family="Space Mono" font-size="8" fill="#6b7280" text-anchor="middle">Private IP:Port → Public IP:Port</text>
+            <line x1="400" y1="63" x2="590" y2="63" stroke="#1f2937" stroke-width="1"/>
+            <text x="415" y="79" font-family="Space Mono" font-size="8" fill="#94a3b8">.1.10:3000 → :203.0.113.1:45001</text>
+            <text x="415" y="97" font-family="Space Mono" font-size="8" fill="#94a3b8">.1.11:4000 → :203.0.113.1:45002</text>
+            <text x="415" y="115" font-family="Space Mono" font-size="8" fill="#94a3b8">.1.12:5000 → :203.0.113.1:45003</text>
+            <!-- Arrow to internet -->
+            <line x1="590" y1="98" x2="650" y2="98" stroke="#ff6b35" stroke-width="1.5" marker-end="url(#arr)"/>
+            <!-- Internet cloud symbol -->
+            <ellipse cx="685" cy="98" rx="32" ry="24" fill="rgba(255,107,53,.1)" stroke="rgba(255,107,53,.4)" stroke-width="1.5"/>
+            <text x="685" y="94" font-family="Space Mono" font-size="8" fill="#ff6b35" text-anchor="middle">INTER</text>
+            <text x="685" y="106" font-family="Space Mono" font-size="8" fill="#ff6b35" text-anchor="middle">NET</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Types table -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📊</span><h3>Types of NAT</h3></div>
+      <div class="section-body">
+        <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Type</th><th>Mapping</th><th>Direction</th><th>Typical Use</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill blue">Static NAT</span></td><td>1 private ↔ 1 public IP</td><td>Bidirectional</td><td>Public-facing servers (web, mail)</td></tr>
+            <tr><td><span class="pill green">Dynamic NAT</span></td><td>Many private → pool of public IPs</td><td>Outbound only</td><td>Organisations with small public pools</td></tr>
+            <tr><td><span class="pill orange">PAT / NAT Overload</span></td><td>Many private IPs → 1 public IP (port-differentiated)</td><td>Outbound only</td><td>Home routers, SOHO networks</td></tr>
+            <tr><td><span class="pill purple">Twice NAT</span></td><td>Both src & dst translated</td><td>Both directions</td><td>Overlapping address space mergers</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><span class="s-icon">⚖️</span><h3>Advantages vs. Limitations</h3></div>
+      <div class="section-body">
+        <div class="grid2">
+          <div>
+            <div class="hbox" style="margin-bottom:12px"><strong>✅ Conserves IPv4 addresses</strong><br>Thousands of devices share one public IP — essential for home/SMB networks.</div>
+            <div class="hbox"><strong>✅ Security through obscurity</strong><br>Internal topology is hidden; unsolicited inbound connections are dropped by default.</div>
+          </div>
+          <div>
+            <div class="hbox orange" style="margin-bottom:12px"><strong>❌ Breaks end-to-end model</strong><br>P2P, VoIP (SIP), and IPsec require special NAT traversal techniques (STUN, ALG).</div>
+            <div class="hbox orange"><strong>❌ Not a replacement for IPv6</strong><br>NAT is a workaround. IPv6 with 128-bit addresses (3.4×10³⁸) eliminates address scarcity entirely.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 5: IPv4 DATAGRAM ════════════════ -->
+<div class="page" id="page-ipv4">
+  <div class="tp-header">
+    <button class="back-btn" onclick="goHome()">← Back to Hub</button>
+    <div class="tp-num">— TOPIC 05</div>
+    <h1>IPv4 Datagram Formats &amp; Fragmentation</h1>
+    <p class="tp-tagline">The IPv4 datagram is the Network Layer's basic unit of data. Its header encodes all routing, fragmentation, and quality-of-service information needed for delivery.</p>
+    <div class="tp-chips"><span class="chip">Header</span><span class="chip">MTU</span><span class="chip">Fragmentation</span><span class="chip">TTL</span></div>
+  </div>
+  <div class="tp-content">
+
+    <!-- Header diagram -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">🗂️</span><h3>IPv4 Header Structure (20 – 60 bytes)</h3></div>
+      <div class="section-body">
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" style="max-height:280px">
+            <style>.hf{font-family:'Space Mono',monospace;font-size:9px;fill:#94a3b8;text-anchor:middle}.hl{font-family:'Space Mono',monospace;font-size:8px;fill:#6b7280;text-anchor:middle}.hw{font-family:'Space Mono',monospace;font-size:9px;fill:#00e5ff;text-anchor:start}</style>
+            <!-- Bit ruler -->
+            <text x="20" y="14" class="hl">0</text><text x="185" y="14" class="hl">7</text><text x="200" y="14" class="hl">8</text><text x="370" y="14" class="hl">15</text><text x="385" y="14" class="hl">16</text><text x="555" y="14" class="hl">23</text><text x="570" y="14" class="hl">24</text><text x="690" y="14" class="hl">31</text>
+            <line x1="10" y1="18" x2="700" y2="18" stroke="#1f2937" stroke-width="1"/>
+            <!-- Row 1: Version(4)|IHL(4)|DSCP(6)|ECN(2)|Total Length(16) -->
+            <rect x="10" y="20" width="80"  height="28" fill="rgba(0,229,255,.15)" stroke="#1f2937"/><text x="50" y="38" class="hf">Version</text>
+            <rect x="90" y="20" width="80"  height="28" fill="rgba(0,229,255,.1)"  stroke="#1f2937"/><text x="130" y="38" class="hf">IHL</text>
+            <rect x="170" y="20" width="200" height="28" fill="rgba(167,139,250,.12)" stroke="#1f2937"/><text x="270" y="38" class="hf">Type of Service / DSCP</text>
+            <rect x="370" y="20" width="330" height="28" fill="rgba(16,185,129,.12)" stroke="#1f2937"/><text x="535" y="38" class="hf">Total Length</text>
+            <!-- Row 2: Identification(16)|Flags(3)|Fragment Offset(13) -->
+            <rect x="10" y="48" width="360" height="28" fill="rgba(251,191,36,.1)"  stroke="#1f2937"/><text x="190" y="66" class="hf">Identification</text>
+            <rect x="370" y="48" width="100" height="28" fill="rgba(255,107,53,.15)" stroke="#1f2937"/><text x="420" y="66" class="hf">Flags</text>
+            <rect x="470" y="48" width="230" height="28" fill="rgba(255,107,53,.1)"  stroke="#1f2937"/><text x="585" y="66" class="hf">Fragment Offset</text>
+            <!-- Row 3: TTL(8)|Protocol(8)|Header Checksum(16) -->
+            <rect x="10"  y="76" width="170" height="28" fill="rgba(0,229,255,.15)" stroke="#1f2937"/><text x="95"  y="94" class="hf">TTL</text>
+            <rect x="180" y="76" width="185" height="28" fill="rgba(167,139,250,.15)" stroke="#1f2937"/><text x="272" y="94" class="hf">Protocol</text>
+            <rect x="365" y="76" width="335" height="28" fill="rgba(16,185,129,.12)" stroke="#1f2937"/><text x="532" y="94" class="hf">Header Checksum</text>
+            <!-- Row 4: Source IP -->
+            <rect x="10" y="104" width="690" height="28" fill="rgba(0,229,255,.08)" stroke="#1f2937"/><text x="355" y="122" class="hf">Source IP Address (32 bits)</text>
+            <!-- Row 5: Dest IP -->
+            <rect x="10" y="132" width="690" height="28" fill="rgba(0,229,255,.08)" stroke="#1f2937"/><text x="355" y="150" class="hf">Destination IP Address (32 bits)</text>
+            <!-- Row 6: Options -->
+            <rect x="10" y="160" width="690" height="28" fill="rgba(107,114,128,.1)" stroke="#1f2937"/><text x="355" y="178" class="hf">Options (0 – 320 bits, if IHL &gt; 5)</text>
+            <!-- Row 7: Data -->
+            <rect x="10" y="188" width="690" height="28" fill="rgba(107,114,128,.06)" stroke="#1f2937" stroke-dasharray="4,3"/><text x="355" y="206" class="hf">Data (Payload)</text>
+            <!-- Key -->
+            <text x="10" y="238" class="hw">KEY FIELDS:</text>
+            <text x="10" y="254" font-family="Space Mono" font-size="8" fill="#6b7280">TTL — decremented per hop, discard at 0 | Flags: DF (don't fragment), MF (more fragments) | Protocol: 6=TCP 17=UDP 1=ICMP</text>
+            <text x="10" y="270" font-family="Space Mono" font-size="8" fill="#6b7280">Fragment Offset — position in original datagram ÷ 8 | Identification — shared by all fragments of same datagram</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header fields table -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📊</span><h3>Header Fields Reference</h3></div>
+      <div class="section-body">
+        <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Field</th><th>Bits</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>Version</td><td>4</td><td>IP version: 4 for IPv4</td></tr>
+            <tr><td>IHL</td><td>4</td><td>Header length in 32-bit words (min 5 = 20 bytes, max 15 = 60 bytes)</td></tr>
+            <tr><td>Type of Service</td><td>8</td><td>DSCP/ECN flags for QoS priority marking</td></tr>
+            <tr><td>Total Length</td><td>16</td><td>Entire datagram size in bytes (max 65,535)</td></tr>
+            <tr><td>Identification</td><td>16</td><td>Unique ID copied to all fragments of the same original datagram</td></tr>
+            <tr><td>Flags</td><td>3</td><td>Bit 1: Reserved. Bit 2: DF (Don't Fragment). Bit 3: MF (More Fragments)</td></tr>
+            <tr><td>Fragment Offset</td><td>13</td><td>Byte offset of this fragment ÷ 8 from start of original datagram</td></tr>
+            <tr><td>TTL</td><td>8</td><td>Decremented by each router; datagram discarded when TTL reaches 0</td></tr>
+            <tr><td>Protocol</td><td>8</td><td>Upper-layer protocol: 1=ICMP, 6=TCP, 17=UDP, 89=OSPF</td></tr>
+            <tr><td>Header Checksum</td><td>16</td><td>Error detection for the header only (not payload)</td></tr>
+            <tr><td>Source IP</td><td>32</td><td>Sender's IP address</td></tr>
+            <tr><td>Destination IP</td><td>32</td><td>Recipient's IP address</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fragmentation -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">✂️</span><h3>Fragmentation Process</h3></div>
+      <div class="section-body">
+        <div class="hbox orange" style="margin-bottom:16px"><strong>When does fragmentation occur?</strong><br>When a datagram is larger than the MTU of the next-hop link. E.g., Ethernet MTU = 1500 bytes. A 4000-byte datagram must be split into fragments ≤ 1480 bytes of data (20-byte header).</div>
+        <ol class="steps">
+          <li>Original datagram (e.g., 4000 bytes total = 20B header + 3980B data) arrives at a router where outgoing MTU = 1500 bytes.</li>
+          <li>Router splits data into chunks: Fragment 1 = 1480 bytes data, Fragment 2 = 1480 bytes data, Fragment 3 = 1020 bytes data.</li>
+          <li>Each fragment gets the original Identification value, its own header (20B), and the Fragment Offset field set to its position ÷ 8.</li>
+          <li>MF (More Fragments) bit = 1 for all but the last fragment. Last fragment has MF = 0.</li>
+          <li>All fragments travel independently to the destination. They may arrive out of order.</li>
+          <li>Destination host reassembles the original datagram using Identification + Fragment Offset. If any fragment is missing, the entire datagram is discarded.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 6: ROUTING & ICMP ════════════════ -->
+<div class="page" id="page-routing">
+  <div class="tp-header">
+    <button class="back-btn" onclick="goHome()">← Back to Hub</button>
+    <div class="tp-num">— TOPIC 06</div>
+    <h1>Routing &amp; Internet Control Protocol</h1>
+    <p class="tp-tagline">Routing protocols compute optimal paths across networks, while ICMP provides the error-reporting and diagnostic backbone of the internet.</p>
+    <div class="tp-chips"><span class="chip">OSPF</span><span class="chip">RIP</span><span class="chip">BGP</span><span class="chip">ICMP</span></div>
+  </div>
+  <div class="tp-content">
+
+    <!-- Routing algorithms comparison -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📊</span><h3>Routing Algorithms Comparison</h3></div>
+      <div class="section-body">
+        <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Algorithm</th><th>Type</th><th>Protocol</th><th>Complexity</th><th>Convergence</th><th>Scope</th></tr></thead>
+          <tbody>
+            <tr><td>Distance Vector</td><td><span class="pill blue">Distributed</span></td><td>RIP (v1/v2)</td><td>O(N²)</td><td>Slow (count-to-∞ issue)</td><td>Small networks</td></tr>
+            <tr><td>Link State</td><td><span class="pill green">Centralised</span></td><td>OSPF, IS-IS</td><td>O(N log N)</td><td>Fast</td><td>Enterprise/ISP</td></tr>
+            <tr><td>Path Vector</td><td><span class="pill purple">Hybrid</span></td><td>BGP-4</td><td>High</td><td>Slow (policy-based)</td><td>Inter-AS (Internet)</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dijkstra diagram -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">🗺️</span><h3>Link-State (Dijkstra) — Example Graph</h3></div>
+      <div class="section-body">
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg" style="max-height:250px">
+            <defs>
+              <marker id="a2" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto">
+                <polygon points="0,0 7,2.5 0,5" fill="#6b7280"/>
+              </marker>
+            </defs>
+            <!-- Edges -->
+            <line x1="80" y1="80" x2="240" y2="80" stroke="#1f2937" stroke-width="2"/>
+            <text x="160" y="70" font-family="Space Mono" font-size="10" fill="#6b7280" text-anchor="middle">2</text>
+            <line x1="80" y1="80" x2="80" y2="180" stroke="#1f2937" stroke-width="2"/>
+            <text x="62" y="135" font-family="Space Mono" font-size="10" fill="#6b7280" text-anchor="middle">4</text>
+            <line x1="240" y1="80" x2="240" y2="180" stroke="#1f2937" stroke-width="2"/>
+            <text x="255" y="135" font-family="Space Mono" font-size="10" fill="#6b7280">3</text>
+            <line x1="80" y1="180" x2="240" y2="180" stroke="#1f2937" stroke-width="2"/>
+            <text x="160" y="198" font-family="Space Mono" font-size="10" fill="#6b7280" text-anchor="middle">1</text>
+            <line x1="240" y1="80" x2="400" y2="130" stroke="#00e5ff" stroke-width="2"/>
+            <text x="325" y="95" font-family="Space Mono" font-size="10" fill="#00e5ff">5</text>
+            <line x1="240" y1="180" x2="400" y2="130" stroke="#00e5ff" stroke-width="2"/>
+            <text x="325" y="172" font-family="Space Mono" font-size="10" fill="#00e5ff">2</text>
+            <line x1="400" y1="130" x2="520" y2="80" stroke="#1f2937" stroke-width="2"/>
+            <text x="465" y="95" font-family="Space Mono" font-size="10" fill="#6b7280">3</text>
+            <line x1="400" y1="130" x2="520" y2="180" stroke="#1f2937" stroke-width="2"/>
+            <text x="465" y="168" font-family="Space Mono" font-size="10" fill="#6b7280">1</text>
+            <!-- Nodes -->
+            <circle cx="80" cy="80" r="22" fill="#07090f" stroke="#00e5ff" stroke-width="2"/>
+            <text x="80" y="85" font-family="Space Mono" font-size="12" fill="#00e5ff" text-anchor="middle" font-weight="bold">A</text>
+            <circle cx="240" cy="80" r="22" fill="#07090f" stroke="#1f2937" stroke-width="2"/>
+            <text x="240" y="85" font-family="Space Mono" font-size="12" fill="#e2e8f0" text-anchor="middle">B</text>
+            <circle cx="80" cy="180" r="22" fill="#07090f" stroke="#1f2937" stroke-width="2"/>
+            <text x="80" y="185" font-family="Space Mono" font-size="12" fill="#e2e8f0" text-anchor="middle">C</text>
+            <circle cx="240" cy="180" r="22" fill="#07090f" stroke="#1f2937" stroke-width="2"/>
+            <text x="240" y="185" font-family="Space Mono" font-size="12" fill="#e2e8f0" text-anchor="middle">D</text>
+            <circle cx="400" cy="130" r="22" fill="rgba(0,229,255,.1)" stroke="#00e5ff" stroke-width="2.5"/>
+            <text x="400" y="135" font-family="Space Mono" font-size="12" fill="#00e5ff" text-anchor="middle">E</text>
+            <circle cx="520" cy="80" r="22" fill="#07090f" stroke="#1f2937" stroke-width="2"/>
+            <text x="520" y="85" font-family="Space Mono" font-size="12" fill="#e2e8f0" text-anchor="middle">F</text>
+            <circle cx="520" cy="180" r="22" fill="#07090f" stroke="#1f2937" stroke-width="2"/>
+            <text x="520" y="185" font-family="Space Mono" font-size="12" fill="#e2e8f0" text-anchor="middle">G</text>
+            <!-- Shortest path A→G label -->
+            <text x="300" y="230" font-family="Space Mono" font-size="9" fill="#00e5ff" text-anchor="middle">Shortest path A → G via highlighted edges (cost = 2+3+2+1 = 8)</text>
+            <text x="80" y="42" font-family="Space Mono" font-size="9" fill="#6b7280" text-anchor="middle">Source</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ICMP messages table -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📡</span><h3>ICMP Message Types Reference</h3></div>
+      <div class="section-body">
+        <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Type</th><th>Code</th><th>Name</th><th>Description</th><th>Used By</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>0</td><td>Echo Reply</td><td>Response to ping request</td><td>ping</td></tr>
+            <tr><td>3</td><td>0–15</td><td>Destination Unreachable</td><td>Router can't deliver packet (net/host/port/protocol unreachable)</td><td>Routers</td></tr>
+            <tr><td>5</td><td>0–3</td><td>Redirect</td><td>Informs host of a better route</td><td>Routers</td></tr>
+            <tr><td>8</td><td>0</td><td>Echo Request</td><td>Ping probe</td><td>ping</td></tr>
+            <tr><td>11</td><td>0</td><td>Time Exceeded (TTL)</td><td>TTL expired — packet discarded by router</td><td>traceroute</td></tr>
+            <tr><td>11</td><td>1</td><td>Time Exceeded (Reassembly)</td><td>Fragment reassembly time exceeded at destination</td><td>Destination host</td></tr>
+            <tr><td>12</td><td>0</td><td>Parameter Problem</td><td>Malformed header field detected</td><td>Routers</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><span class="s-icon">💡</span><h3>How traceroute uses ICMP</h3></div>
+      <div class="section-body">
+        <ol class="steps">
+          <li>Send probe packet with TTL = 1. First router decrements to 0, discards packet, returns ICMP Time Exceeded. IP of that router is revealed.</li>
+          <li>Send probe with TTL = 2. Second router sends back ICMP Time Exceeded. Second hop identified.</li>
+          <li>Repeat, incrementing TTL by 1 each round until the destination sends ICMP Port Unreachable (or Echo Reply). Full path is mapped.</li>
+          <li>Timestamp of each reply reveals RTT to each hop — useful for diagnosing where latency or packet loss occurs.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 7: DLL ════════════════ -->
+<div class="page" id="page-dll">
+  <div class="tp-header">
+    <button class="back-btn" onclick="goHome()">← Back to Hub</button>
+    <div class="tp-num">— TOPIC 07</div>
+    <h1>Data Link Layer (DLL) Protocol</h1>
+    <p class="tp-tagline">Layer 2 of the OSI model provides node-to-node reliable data transfer, encapsulating packets into frames with error detection and MAC-level access control.</p>
+    <div class="tp-chips"><span class="chip">Framing</span><span class="chip">CRC</span><span class="chip">MAC</span><span class="chip">Ethernet</span></div>
+  </div>
+  <div class="tp-content">
+
+    <!-- Frame structure -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">🗂️</span><h3>Ethernet Frame Structure (IEEE 802.3)</h3></div>
+      <div class="section-body">
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 700 110" xmlns="http://www.w3.org/2000/svg" style="max-height:110px">
+            <!-- Preamble -->
+            <rect x="10" y="30" width="72" height="40" rx="2" fill="rgba(107,114,128,.2)" stroke="#1f2937"/>
+            <text x="46" y="47" font-family="Space Mono" font-size="8" fill="#6b7280" text-anchor="middle">Preamble</text>
+            <text x="46" y="60" font-family="Space Mono" font-size="8" fill="#6b7280" text-anchor="middle">7 bytes</text>
+            <!-- SFD -->
+            <rect x="82" y="30" width="44" height="40" rx="2" fill="rgba(107,114,128,.2)" stroke="#1f2937"/>
+            <text x="104" y="47" font-family="Space Mono" font-size="8" fill="#6b7280" text-anchor="middle">SFD</text>
+            <text x="104" y="60" font-family="Space Mono" font-size="8" fill="#6b7280" text-anchor="middle">1B</text>
+            <!-- Dst MAC -->
+            <rect x="126" y="30" width="72" height="40" rx="2" fill="rgba(0,229,255,.15)" stroke="rgba(0,229,255,.4)"/>
+            <text x="162" y="47" font-family="Space Mono" font-size="8" fill="#00e5ff" text-anchor="middle">Dst MAC</text>
+            <text x="162" y="60" font-family="Space Mono" font-size="8" fill="#00e5ff" text-anchor="middle">6 bytes</text>
+            <!-- Src MAC -->
+            <rect x="198" y="30" width="72" height="40" rx="2" fill="rgba(0,229,255,.12)" stroke="rgba(0,229,255,.3)"/>
+            <text x="234" y="47" font-family="Space Mono" font-size="8" fill="#00e5ff" text-anchor="middle">Src MAC</text>
+            <text x="234" y="60" font-family="Space Mono" font-size="8" fill="#00e5ff" text-anchor="middle">6 bytes</text>
+            <!-- EtherType -->
+            <rect x="270" y="30" width="60" height="40" rx="2" fill="rgba(167,139,250,.15)" stroke="rgba(167,139,250,.4)"/>
+            <text x="300" y="47" font-family="Space Mono" font-size="8" fill="#a78bfa" text-anchor="middle">EtherType</text>
+            <text x="300" y="60" font-family="Space Mono" font-size="8" fill="#a78bfa" text-anchor="middle">2 bytes</text>
+            <!-- Payload -->
+            <rect x="330" y="30" width="250" height="40" rx="2" fill="rgba(16,185,129,.1)" stroke="rgba(16,185,129,.3)"/>
+            <text x="455" y="47" font-family="Space Mono" font-size="8" fill="#10b981" text-anchor="middle">Payload (Data)</text>
+            <text x="455" y="60" font-family="Space Mono" font-size="8" fill="#10b981" text-anchor="middle">46 – 1500 bytes</text>
+            <!-- FCS -->
+            <rect x="580" y="30" width="60" height="40" rx="2" fill="rgba(255,107,53,.15)" stroke="rgba(255,107,53,.4)"/>
+            <text x="610" y="47" font-family="Space Mono" font-size="8" fill="#ff6b35" text-anchor="middle">FCS/CRC</text>
+            <text x="610" y="60" font-family="Space Mono" font-size="8" fill="#ff6b35" text-anchor="middle">4 bytes</text>
+            <!-- bracket: min frame 64B -->
+            <line x1="126" y1="78" x2="640" y2="78" stroke="#6b7280" stroke-width="1"/>
+            <text x="383" y="92" font-family="Space Mono" font-size="8" fill="#6b7280" text-anchor="middle">Min frame = 64 bytes | Max frame = 1518 bytes</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error detection -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">🔍</span><h3>Error Detection Methods</h3></div>
+      <div class="section-body">
+        <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>Method</th><th>Overhead</th><th>Detects</th><th>Corrects?</th><th>Used In</th></tr></thead>
+          <tbody>
+            <tr><td>Parity Bit</td><td>1 bit</td><td>Single-bit errors</td><td>No</td><td>Legacy serial</td></tr>
+            <tr><td>2D Parity</td><td>~N bits</td><td>All 1-bit, some 2-bit errors</td><td>1-bit only</td><td>RAID-like systems</td></tr>
+            <tr><td>Checksum (IP/UDP)</td><td>16 bits</td><td>Most burst errors</td><td>No</td><td>IP, UDP, TCP headers</td></tr>
+            <tr><td>CRC-16</td><td>16 bits</td><td>All bursts ≤ 16 bits</td><td>No</td><td>USB, many serial protocols</td></tr>
+            <tr><td>CRC-32</td><td>32 bits</td><td>All bursts ≤ 32 bits, 99.998%</td><td>No</td><td>Ethernet, Wi-Fi, ZIP</td></tr>
+            <tr><td>Hamming Code</td><td>O(log n)</td><td>All 1-bit, some 2-bit</td><td>Yes (1-bit)</td><td>ECC RAM, SECDED</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DLL sublayers -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">🔧</span><h3>DLL Sub-Layers &amp; Key Functions</h3></div>
+      <div class="section-body">
+        <div class="grid2">
+          <div>
+            <div class="hbox" style="margin-bottom:12px"><strong>LLC — Logical Link Control</strong><br>Multiplexes protocols above (IPv4, IPv6, ARP). Provides optional flow control and error control between the two endpoint DLL entities.</div>
+            <div class="hbox purple"><strong>MAC — Media Access Control</strong><br>Contains the unique 48-bit hardware address burned into the NIC. Controls access to the shared physical medium using CSMA/CD or CSMA/CA.</div>
+          </div>
+          <div>
+            <div class="hbox orange" style="margin-bottom:12px"><strong>Framing</strong><br>Encapsulates the IP packet (from Network Layer) by adding a header (dst/src MAC, EtherType) and a trailer (FCS/CRC) to create a frame.</div>
+            <div class="hbox"><strong>Flow Control</strong><br>Prevents a fast sender from overwhelming a slow receiver. DLL uses mechanisms like stop-and-wait, sliding window (Go-Back-N, Selective Repeat).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ PAGE 8: OSI ════════════════ -->
+<div class="page" id="page-osi">
+  <div class="tp-header">
+    <button class="back-btn" onclick="goHome()">← Back to Hub</button>
+    <div class="tp-num">— TOPIC 08</div>
+    <h1>OSI Reference Model</h1>
+    <p class="tp-tagline">The 7-layer Open Systems Interconnection model — ISO's standardised framework for how heterogeneous computer networks communicate end-to-end.</p>
+    <div class="tp-chips"><span class="chip">7 Layers</span><span class="chip">Protocol Stack</span><span class="chip">Encapsulation</span><span class="chip">ISO 7498</span></div>
+  </div>
+  <div class="tp-content">
+
+    <!-- Layer diagram -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">🏗️</span><h3>The 7 Layers — Visual Stack</h3></div>
+      <div class="section-body">
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" style="max-height:300px">
+            <!-- Sender stack -->
+            <text x="165" y="18" font-family="Space Mono" font-size="10" fill="#6b7280" text-anchor="middle">SENDER</text>
+            <!-- Receiver stack -->
+            <text x="515" y="18" font-family="Space Mono" font-size="10" fill="#6b7280" text-anchor="middle">RECEIVER</text>
+            <!-- Layer data -->
+            <!-- L7 App -->
+            <rect x="10"  y="25" width="310" height="32" rx="2" fill="rgba(0,229,255,.18)" stroke="rgba(0,229,255,.5)" stroke-width="1.2"/>
+            <text x="20"  y="44" font-family="Space Mono" font-size="9" fill="#00e5ff">7 APPLICATION</text>
+            <text x="200" y="44" font-family="Space Mono" font-size="8" fill="#6b7280">HTTP, FTP, DNS, SMTP</text>
+            <rect x="360" y="25" width="310" height="32" rx="2" fill="rgba(0,229,255,.18)" stroke="rgba(0,229,255,.5)" stroke-width="1.2"/>
+            <text x="370" y="44" font-family="Space Mono" font-size="9" fill="#00e5ff">7 APPLICATION</text>
+            <!-- horizontal arrow -->
+            <line x1="320" y1="41" x2="360" y2="41" stroke="#1f2937" stroke-width="1" stroke-dasharray="3,3"/>
+            <!-- L6 -->
+            <rect x="10"  y="60" width="310" height="32" rx="2" fill="rgba(167,139,250,.15)" stroke="rgba(167,139,250,.4)" stroke-width="1"/>
+            <text x="20"  y="79" font-family="Space Mono" font-size="9" fill="#a78bfa">6 PRESENTATION</text>
+            <text x="210" y="79" font-family="Space Mono" font-size="8" fill="#6b7280">TLS, JPEG</text>
+            <rect x="360" y="60" width="310" height="32" rx="2" fill="rgba(167,139,250,.15)" stroke="rgba(167,139,250,.4)" stroke-width="1"/>
+            <text x="370" y="79" font-family="Space Mono" font-size="9" fill="#a78bfa">6 PRESENTATION</text>
+            <line x1="320" y1="76" x2="360" y2="76" stroke="#1f2937" stroke-width="1" stroke-dasharray="3,3"/>
+            <!-- L5 -->
+            <rect x="10"  y="95" width="310" height="32" rx="2" fill="rgba(251,191,36,.1)" stroke="rgba(251,191,36,.3)" stroke-width="1"/>
+            <text x="20"  y="114" font-family="Space Mono" font-size="9" fill="#fbbf24">5 SESSION</text>
+            <text x="140" y="114" font-family="Space Mono" font-size="8" fill="#6b7280">NetBIOS, RPC, Sockets</text>
+            <rect x="360" y="95" width="310" height="32" rx="2" fill="rgba(251,191,36,.1)" stroke="rgba(251,191,36,.3)" stroke-width="1"/>
+            <text x="370" y="114" font-family="Space Mono" font-size="9" fill="#fbbf24">5 SESSION</text>
+            <line x1="320" y1="111" x2="360" y2="111" stroke="#1f2937" stroke-width="1" stroke-dasharray="3,3"/>
+            <!-- L4 -->
+            <rect x="10"  y="130" width="310" height="32" rx="2" fill="rgba(16,185,129,.15)" stroke="rgba(16,185,129,.4)" stroke-width="1"/>
+            <text x="20"  y="149" font-family="Space Mono" font-size="9" fill="#10b981">4 TRANSPORT</text>
+            <text x="170" y="149" font-family="Space Mono" font-size="8" fill="#6b7280">TCP, UDP (Segment)</text>
+            <rect x="360" y="130" width="310" height="32" rx="2" fill="rgba(16,185,129,.15)" stroke="rgba(16,185,129,.4)" stroke-width="1"/>
+            <text x="370" y="149" font-family="Space Mono" font-size="9" fill="#10b981">4 TRANSPORT</text>
+            <line x1="320" y1="146" x2="360" y2="146" stroke="#1f2937" stroke-width="1" stroke-dasharray="3,3"/>
+            <!-- L3 -->
+            <rect x="10"  y="165" width="310" height="32" rx="2" fill="rgba(0,229,255,.12)" stroke="rgba(0,229,255,.35)" stroke-width="1"/>
+            <text x="20"  y="184" font-family="Space Mono" font-size="9" fill="#00e5ff">3 NETWORK</text>
+            <text x="150" y="184" font-family="Space Mono" font-size="8" fill="#6b7280">IP, ICMP, OSPF (Packet)</text>
+            <rect x="360" y="165" width="310" height="32" rx="2" fill="rgba(0,229,255,.12)" stroke="rgba(0,229,255,.35)" stroke-width="1"/>
+            <text x="370" y="184" font-family="Space Mono" font-size="9" fill="#00e5ff">3 NETWORK</text>
+            <line x1="320" y1="181" x2="360" y2="181" stroke="#1f2937" stroke-width="1" stroke-dasharray="3,3"/>
+            <!-- L2 -->
+            <rect x="10"  y="200" width="310" height="32" rx="2" fill="rgba(255,107,53,.12)" stroke="rgba(255,107,53,.35)" stroke-width="1"/>
+            <text x="20"  y="219" font-family="Space Mono" font-size="9" fill="#ff6b35">2 DATA LINK</text>
+            <text x="155" y="219" font-family="Space Mono" font-size="8" fill="#6b7280">Ethernet, Wi-Fi (Frame)</text>
+            <rect x="360" y="200" width="310" height="32" rx="2" fill="rgba(255,107,53,.12)" stroke="rgba(255,107,53,.35)" stroke-width="1"/>
+            <text x="370" y="219" font-family="Space Mono" font-size="9" fill="#ff6b35">2 DATA LINK</text>
+            <line x1="320" y1="216" x2="360" y2="216" stroke="#1f2937" stroke-width="1" stroke-dasharray="3,3"/>
+            <!-- L1 -->
+            <rect x="10"  y="235" width="310" height="32" rx="2" fill="rgba(107,114,128,.2)" stroke="#374151" stroke-width="1.5"/>
+            <text x="20"  y="254" font-family="Space Mono" font-size="9" fill="#9ca3af">1 PHYSICAL</text>
+            <text x="140" y="254" font-family="Space Mono" font-size="8" fill="#6b7280">Bits, Cables, NIC, DSL</text>
+            <rect x="360" y="235" width="310" height="32" rx="2" fill="rgba(107,114,128,.2)" stroke="#374151" stroke-width="1.5"/>
+            <text x="370" y="254" font-family="Space Mono" font-size="9" fill="#9ca3af">1 PHYSICAL</text>
+            <!-- Physical actual connection -->
+            <line x1="320" y1="251" x2="360" y2="251" stroke="#374151" stroke-width="2"/>
+            <!-- encapsulation arrows -->
+            <text x="340" y="290" font-family="Space Mono" font-size="8" fill="#6b7280" text-anchor="middle">↕ Actual physical link</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full layers table -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">📊</span><h3>All 7 Layers — Full Reference</h3></div>
+      <div class="section-body">
+        <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Name</th><th>PDU</th><th>Key Protocols</th><th>Devices</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill blue">7</span></td><td>Application</td><td>Data</td><td>HTTP, FTP, SMTP, DNS, SNMP</td><td>—</td><td>User-facing network services</td></tr>
+            <tr><td><span class="pill purple">6</span></td><td>Presentation</td><td>Data</td><td>TLS/SSL, JPEG, MPEG, ASCII</td><td>—</td><td>Encoding, encryption, compression</td></tr>
+            <tr><td><span class="pill yellow">5</span></td><td>Session</td><td>Data</td><td>NetBIOS, RPC, NFS, SQL</td><td>—</td><td>Open / manage / close sessions</td></tr>
+            <tr><td><span class="pill green">4</span></td><td>Transport</td><td>Segment</td><td>TCP, UDP, SCTP</td><td>Firewall</td><td>End-to-end delivery, reliability, ports</td></tr>
+            <tr><td><span class="pill blue">3</span></td><td>Network</td><td>Packet</td><td>IP, ICMP, RIP, OSPF, BGP</td><td>Router</td><td>Logical addressing, routing</td></tr>
+            <tr><td><span class="pill orange">2</span></td><td>Data Link</td><td>Frame</td><td>Ethernet, Wi-Fi, PPP, ARP</td><td>Switch, Bridge</td><td>MAC addressing, framing, error detection</td></tr>
+            <tr><td><span class="pill yellow">1</span></td><td>Physical</td><td>Bit</td><td>DSL, 1000BASE-T, RS-232</td><td>Hub, NIC, Cable</td><td>Raw bit transmission over medium</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- OSI vs TCP/IP -->
+    <div class="section">
+      <div class="section-header"><span class="s-icon">⚖️</span><h3>OSI vs TCP/IP Model</h3></div>
+      <div class="section-body">
+        <div class="grid2">
+          <div>
+            <div class="hbox" style="margin-bottom:10px"><strong>OSI Model (7 layers)</strong><br>Theoretical reference model. Separates Presentation and Session from Application. Distinguishes LLC from MAC. Never fully implemented as a single protocol suite.</div>
+            <ul class="fact-list">
+              <li>Developed by ISO in 1984 as a vendor-neutral standard.</li>
+              <li>Provides a clean separation of concerns; ideal for teaching.</li>
+              <li>Layers 5 & 6 rarely have distinct protocol implementations.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="hbox orange" style="margin-bottom:10px"><strong>TCP/IP Model (4 layers)</strong><br>Practical internet model. Application = OSI 5+6+7. Internet = OSI 3. Network Access = OSI 1+2. Transport remains the same.</div>
+            <ul class="fact-list">
+              <li>Developed by DARPA in the 1970s. Powers the modern internet.</li>
+              <li>Simpler, implementation-first philosophy.</li>
+              <li>Does not define how physical or data link should work.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function goHome() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-home').classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
